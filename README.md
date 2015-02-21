@@ -4,7 +4,7 @@ A package manager is a great tool. It enhances your system security by downloadi
 
 One of these package managers is APT, the Advanced Packaging Tool, used by Ubuntu and Debian. APT can be extended with scripts and that's exactly what I did to automate some tasks I often need to do. I'm publishing these extensions here in the hope that they will be useful to somebody else. If I write more extensions, I will add them here.
 
-All extensions are part of one single script called `apt-ext.py`. To use it, copy the script to a directory included in your $PATH, like ~/bin (you can remove the .py file extension).
+All extensions are part of one single script called `apt-ext.py`. To use it, copy the script to a directory included in your $PATH, like ~/.local/bin (you can remove the .py file extension).
 
 ## Extensions
 
@@ -16,9 +16,9 @@ But in most cases the new kernel is working great, so you you don't need to keep
 
 The extension prints out a list of all packages containing a kernel (except the currently running kernel). This includes the `linux-image`-packages, but also `linux-headers` and `linux-tools`.
 
-To remove the old kernels packages, simply pass the list to `apt-get`:
+To remove the old kernels packages, simply pass the list to `apt`:
 
-    $ sudo apt-get purge $(apt-ext oldkernels)
+    $ sudo apt purge $(apt-ext oldkernels)
 
 ### unmanged
 
@@ -38,18 +38,18 @@ You can use it just like that:
 
 ### backup and restore
 
-I use these ones for my regular backup. `backup` creates a list of all packages sources and of all orphaned packages (all packages that are not a dependency of another package). `restore` can read this list and install the packages again on a fresh system.
+I use these ones for my regular backup. `backup` creates a list of all packages currently installed. `restore` can read this list and install the packages again on a fresh system.
 
 Examples:
 
-    $ apt-ext backup /media/backup
+    $ apt-ext backup apt.txt
 
-Creates the files packages.list and sources.list in /media/backup/.
+Writes your package list to apt.txt.
 
-    $ sudo apt-ext restore /media/backup/packages.list
+    $ sudo apt-ext restore apt.txt
 
-Installs all packages listed in packages.list.
+Installs all packages listed in apt.txt.
 
 ## Dependencies
 
-`python3`, `python3-apt`, `awk`, `libc6`, `coreutils`, `deborphan`
+`python3`, `python3-apt`, `python3-setproctitle`, `awk`,

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2014 David Haller <davidhaller@outlook.com>
+# Copyright (C) 2015 David Haller <davidhaller@outlook.com>
 #
 # apt-ext is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -21,7 +21,6 @@ from os import walk
 from os.path import basename, isdir, join
 from pipes import Template
 from platform import release
-from shutil import copy
 from subprocess import call
 from sys import argv, exit
 
@@ -54,9 +53,8 @@ class OldKernelFilter(Filter):
 
 def managed_files() -> list:
     """
-    Goes through all installed packages and collects all files
-    installed by each package. Returns a list with the absolute paths
-    of the installed files.
+    Returns a list with the absolute paths
+    of all installed files.
     """
     cache = Cache()
     result = []
@@ -68,14 +66,15 @@ def managed_files() -> list:
     return result
 
 
-def all_files(exclude = {"/home", "/host", "/dev", "/media", "/mnt",
+def all_files(exclude = {"/home", "/dev", "/media", "/mnt",
                          "/opt", "/proc", "/root", "/run",
                          "/sys", "/tmp", "/var"}) -> list:
     """
-    Starting from the root directory, this method gets the absolute paths of *all* files,
-    including sub directories, excluding top level directories specified by "exclude".
+    Returns the absolute paths of all files in /,
+    including subdirectories.
+    @param exclude: Directories that won't be searched.
     """
-    folders = list(set(glob("/*")) - exclude)  # Top level folders to search (e.g /usr, /etc, /var)
+    folders = list(set(glob("/*")) - exclude)
     result = []
 
     for folder in folders:
@@ -131,25 +130,20 @@ if __name__ == "__main__":
             exit()
 
         elif argv[1] == "backup":
-            path = argv[2]
-            copy("/etc/apt/sources.list", join(path, "sources.list"))
-
             pipeline = Template()
-            pipeline.append("deborphan -a", "--")
-            pipeline.append("awk '{print $2}'", "--")
-            pipeline.append("sort", "--")
+            pipeline.append("dpkg --get-selections", "--")
+            pipeline.append("awk '{print $1}'", "--")
 
-            file = pipeline.open(join(path, "packages.list"), "w")
+            file = pipeline.open(argv[2], "w")
             file.write("")
             file.close()
 
             exit()
 
         elif argv[1] == "restore":
-            command = ["apt-get", "install"]
-            path = argv[2]
+            command = ["apt", "install"]
 
-            with open(path, "r") as file:
+            with open(argv[2], "r") as file:
                 for line in file.readlines():
                     command.append(line.replace("\n", ""))
 
@@ -160,8 +154,8 @@ if __name__ == "__main__":
             raise SyntaxError
 
     except KeyboardInterrupt:
-        exit("\nProgram stopped by user.")
+        exit("\n Program exited.")
     except IOError as error:
         exit("{0}: {1}".format(error.strerror, error.filename))
     except (SyntaxError, IndexError):
-        exit("Usage: {0} oldkernels|unmanaged|missing|backup [dir]|restore [file]".format(basename(argv[0])))
+        exit("Usage: {0} oldkernels|unmanaged|missing|backup [file]|restore [file]".format(basename(argv[0])))
