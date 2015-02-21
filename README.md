@@ -52,4 +52,4 @@ Installs all packages listed in apt.txt.
 
 ## Dependencies
 
-`python3`, `python3-apt`, `python3-setproctitle`, `awk`,
+`python3`, `python3-apt`, `python3-setproctitle`, `awk`

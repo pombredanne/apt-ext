@@ -154,7 +154,7 @@ if __name__ == "__main__":
             raise SyntaxError
 
     except KeyboardInterrupt:
-        exit("\n Program exited.")
+        exit("\nProgram exited.")
     except IOError as error:
         exit("{0}: {1}".format(error.strerror, error.filename))
     except (SyntaxError, IndexError):
