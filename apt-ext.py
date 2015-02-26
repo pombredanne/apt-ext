@@ -31,22 +31,27 @@ from setproctitle import setproctitle
 class OldKernelFilter(Filter):
     def apply(self, package):
         installed = package.is_installed
-        starts_with_linux = package.shortname.startswith("linux")
 
+        """
+        Checks if packages belongs to one of the kernel package types.
+        """
+
+        starts_with_linux = package.shortname.startswith("linux")
         ends_with_section = False
 
         for section in frozenset({"backports-modules", "restricted-modules", "headers", "image", "tools"}):
             if section in package.shortname:
                 ends_with_section = True
+                break
 
-        correct_version = False
+        """
+        Check if package is not a metapackage (contains a version string)
+        and that the package does not contain the currently running kernel.
+        """
 
-        current_linux_version = release().split("-")
-        current_linux_version = current_linux_version[0] + "-" + current_linux_version[1]
-
-        for character in package.shortname:
-            if character.isdigit():
-                correct_version = current_linux_version not in package.shortname
+        current_version = release().split("-")
+        current_version = current_version[0] + "-" + current_version[1]
+        correct_version = current_version not in package.shortname and "." in package.shortname
 
         return installed and starts_with_linux and ends_with_section and correct_version
 
@@ -74,7 +79,7 @@ def all_files(exclude = {"/home", "/dev", "/media", "/mnt",
     including subdirectories.
     @param exclude: Directories that won't be searched.
     """
-    folders = list(set(glob("/*")) - exclude)
+    folders = set(glob("/*")) - exclude
     result = []
 
     for folder in folders:
