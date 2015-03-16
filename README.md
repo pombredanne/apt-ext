@@ -46,7 +46,7 @@ Examples:
 
 Writes your package list to apt.txt.
 
-    $ sudo apt-ext restore apt.txt
+    $ apt-ext restore apt.txt
 
 Installs all packages listed in apt.txt.
 
