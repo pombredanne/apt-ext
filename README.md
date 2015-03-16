@@ -42,14 +42,14 @@ I use these ones for my regular backup. `backup` creates a list of all packages 
 
 Examples:
 
-    $ apt-ext backup apt.txt
+    $ apt-ext backup > apt.txt
 
 Writes your package list to apt.txt.
 
-    $ apt-ext restore apt.txt
+    $ apt-ext restore < apt.txt
 
 Installs all packages listed in apt.txt.
 
 ## Dependencies
 
-`python3`, `python3-apt`, `python3-setproctitle`, `awk`
+`python3`, `python3-apt`, `awk`

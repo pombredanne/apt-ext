@@ -25,7 +25,6 @@ from subprocess import call
 from sys import argv, exit
 
 from apt.cache import Cache, Filter, FilteredCache
-from setproctitle import setproctitle
 
 
 class OldKernelFilter(Filter):
@@ -45,7 +44,7 @@ class OldKernelFilter(Filter):
                 break
 
         """
-        Check if package is not a metapackage (contains a version string)
+        Checks if package is not a metapackage (contains a version string)
         and that the package does not contain the currently running kernel.
         """
 
@@ -71,9 +70,9 @@ def managed_files() -> list:
     return result
 
 
-def all_files(exclude = {"/home", "/dev", "/media", "/mnt",
-                         "/opt", "/proc", "/root", "/run",
-                         "/sys", "/tmp", "/var"}) -> list:
+def all_files(exclude={"/home", "/dev", "/media", "/mnt",
+                       "/opt", "/proc", "/root", "/run",
+                       "/sys", "/tmp", "/var"}) -> list:
     """
     Returns the absolute paths of all files in /,
     including subdirectories.
@@ -92,12 +91,10 @@ def all_files(exclude = {"/home", "/dev", "/media", "/mnt",
 
 
 def generate(text: list) -> str:
-    return str.strip("".join(text))
+    return str.strip(str().join(text))
 
 
 if __name__ == "__main__":
-    setproctitle("apt-ext")
-
     try:
         if argv[1] == "oldkernels":
             cache = FilteredCache()
@@ -139,28 +136,26 @@ if __name__ == "__main__":
             pipeline.append("dpkg --get-selections", "--")
             pipeline.append("awk '{print $1}'", "--")
 
-            file = pipeline.open(argv[2], "w")
-            file.write("")
-            file.close()
+            with pipeline.open("/dev/stdout", "w") as packages:
+                packages.write("")
 
             exit()
 
         elif argv[1] == "restore":
             command = ["sudo", "apt", "install"]
 
-            with open(argv[2], "r") as file:
-                for line in file.readlines():
-                    command.append(line.replace("\n", ""))
+            with open("/dev/stdin", "r") as packages:
+                for package in packages.readlines():
+                    command.append(package.replace("\n", ""))
 
             call(command)
             exit()
-
         else:
             raise SyntaxError
 
     except KeyboardInterrupt:
-        exit("\nProgram exited.")
+        exit("\nProgram aborted by user.")
     except IOError as error:
         exit("{0}: {1}".format(error.strerror, error.filename))
     except (SyntaxError, IndexError):
-        exit("Usage: {0} oldkernels|unmanaged|missing|backup [file]|restore [file]".format(basename(argv[0])))
+        exit("Usage: {0} oldkernels|unmanaged|missing|backup|restore".format(basename(argv[0])))
