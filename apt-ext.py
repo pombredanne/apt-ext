@@ -146,7 +146,7 @@ if __name__ == "__main__":
             exit()
 
         elif argv[1] == "restore":
-            command = ["apt", "install"]
+            command = ["sudo", "apt", "install"]
 
             with open(argv[2], "r") as file:
                 for line in file.readlines():

@@ -30,7 +30,7 @@ You can find those files using the `unmanaged` extension. It creates a list of t
 
 ### missing
 
-This extensions does the opposite of  `unmanaged`. It prints out a list with the absolute paths of all files that are registered with APT, but not on your computer - maybe because you deleted them by accident. The list can be useful when you want to repair an application because you just need to reinstall the packages containing the missing files.
+This extensions does the opposite of `unmanaged`. It prints out a list with the absolute paths of all files that are registered with APT, but not on your computer - maybe because you deleted them by accident. The list can be useful when you want to repair an application because you just need to reinstall the packages containing the missing files.
 
 You can use it just like that:
 
